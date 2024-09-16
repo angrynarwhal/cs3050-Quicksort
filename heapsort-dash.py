@@ -50,6 +50,9 @@ app = dash.Dash(__name__)
 # Layout of the Dash app
 app.layout = html.Div([
     html.H1("HeapSort Visualization with Dash and Plotly"),
+    html.H3("Heap elements: Blue (indicating that these elements are still part of the heap"), 
+	html.H3("Pivot (extracted max element): Red (indicating the current element being extracted from the heap"), 
+	html.H3("Sorted elements: Green (indicating that these elements have been fully sorted"), 
     dcc.Graph(id='graph'),
     dcc.Interval(id='interval-component', interval=1000, n_intervals=0)  # Update every 1 second
 ])
