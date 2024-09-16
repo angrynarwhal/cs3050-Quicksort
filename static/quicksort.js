@@ -3,24 +3,26 @@ const width = +svg.attr("width");
 const height = +svg.attr("height");
 let duration = 500;
 
-// Fixed width for each bar and total width calculation
-const barWidth = 40;
-const margin = 50;  // margin for padding on both sides
+// Fixed margin for the bars
+const margin = 50;
 
-// Function to render the bars with extra space between divided partitions
+// Function to render the bars with spacing between divided partitions
 function renderBars(data, low, high, depth, isFinalStep = false) {
     // Total number of elements and available width for the entire array
     const totalElements = data.length;
     const availableWidth = width - 2 * margin;  // Leave some margin on the sides
 
-    // Dynamic partition space, which grows based on the recursion depth
-    const partitionSpace = isFinalStep ? 0 : (depth + 1) * 30;  // No space in the final step
+    // Dynamic partition space, which grows based on recursion depth
+    const partitionSpace = isFinalStep ? 0 : (depth + 1) * 30;  // No extra space in the final step
 
-    // X scale: Ensures all bars fit within the available space
+    // Calculate bar width dynamically based on the number of elements and available width
+    const barWidth = availableWidth / totalElements - 5;  // Ensure bars fit with some gap
+
+    // X scale: Ensure all bars fit within the available space, with partition space added
     const x = d3.scaleBand()
-        .domain(d3.range(0, totalElements))  // We ensure to cover all elements in the array
-        .range([margin, availableWidth - margin])  // Keep bars within the canvas
-        .padding(0.2);  // Padding between bars
+        .domain(d3.range(0, totalElements))  // Cover all elements in the array
+        .range([margin, availableWidth + margin])  // Keep bars within the canvas
+        .padding(0.1);  // Padding between bars
 
     // Y scale for bar heights
     const y = d3.scaleLinear()
@@ -42,7 +44,7 @@ function renderBars(data, low, high, depth, isFinalStep = false) {
         })
         .attr("y", d => y(d))
         .attr("height", d => height - y(d))
-        .attr("width", x.bandwidth());
+        .attr("width", barWidth);  // Adjust width dynamically to prevent overlap
 
     // Update phase: Animate the transition of bars
     bars.transition()
@@ -53,7 +55,8 @@ function renderBars(data, low, high, depth, isFinalStep = false) {
             return adjustedX;
         })
         .attr("y", d => y(d))
-        .attr("height", d => height - y(d));
+        .attr("height", d => height - y(d))
+        .attr("width", barWidth);  // Adjust width dynamically to prevent overlap
 
     // Exit phase: Remove old bars
     bars.exit().remove();
