@@ -1,5 +1,7 @@
 # cs3050-Quicksort
 
+Developed using python3.12.6
+
 ## Setup Jupyter Notebook 
 1. Fork the reposistory
 2. Clone your fork
