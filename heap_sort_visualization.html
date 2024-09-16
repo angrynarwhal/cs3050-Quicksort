@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeapSort Visualization with D3.js</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .bar {
+            fill: steelblue;
+        }
+        .bar.red {
+            fill: red;
+        }
+        .bar.green {
+            fill: green;
+        }
+        .axis-label {
+            font-size: 12px;
+            text-anchor: middle;
+        }
+    </style>
+</head>
+<body>
+    <h1>HeapSort Visualization with D3.js</h1>
+    <svg width="960" height="500"></svg>
+
+    <script>
+        // Define margin, width, and height for the SVG
+        const margin = {top: 20, right: 30, bottom: 40, left: 40};
+        const width = 960 - margin.left - margin.right;
+        const height = 500 - margin.top - margin.bottom;
+
+        // Create an SVG container
+        const svg = d3.select("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Global variable for sorting steps
+        let steps = [];
+
+        // Create a sample array for HeapSort
+        let arr = d3.shuffle(d3.range(1, 21).map(d => Math.floor(Math.random() * 100)));
+
+        // Function to perform HeapSort and store sorting steps
+        function heapSort(arr) {
+            const n = arr.length;
+
+            // Build the max heap
+            for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+                heapify(arr, n, i);
+            }
+
+            // Extract elements from the heap
+            for (let i = n - 1; i > 0; i--) {
+                // Swap the root (max) with the last element
+                [arr[0], arr[i]] = [arr[i], arr[0]];
+                steps.push({arr: [...arr], sorted: i, heapRoot: 0});
+                heapify(arr, i, 0);
+            }
+            steps.push({arr: [...arr], sorted: 0, heapRoot: null});  // Final sorted state
+        }
+
+        // Heapify function to maintain the heap property
+        function heapify(arr, n, i) {
+            let largest = i;
+            const left = 2 * i + 1;
+            const right = 2 * i + 2;
+
+            if (left < n && arr[left] > arr[largest]) {
+                largest = left;
+            }
+            if (right < n && arr[right] > arr[largest]) {
+                largest = right;
+            }
+            if (largest !== i) {
+                [arr[i], arr[largest]] = [arr[largest], arr[i]];  // Swap
+                steps.push({arr: [...arr], sorted: n, heapRoot: largest});
+                heapify(arr, n, largest);
+            }
+        }
+
+        // Call heapSort to generate the steps
+        heapSort(arr);
+
+        // Create scales for the bar chart
+        const xScale = d3.scaleBand()
+            .range([0, width])
+            .padding(0.2)
+            .domain(d3.range(arr.length));
+
+        const yScale = d3.scaleLinear()
+            .range([height, 0])
+            .domain([0, d3.max(arr) + 10]);
+
+        // Function to update the bars based on the sorting step
+        function updateBars(stepData) {
+            const bars = svg.selectAll(".bar")
+                .data(stepData.arr, d => d);
+
+            // Enter phase: Create bars for each element
+            bars.enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", (d, i) => xScale(i))
+                .attr("y", yScale(0))
+                .attr("height", 0)
+                .attr("width", xScale.bandwidth())
+                .merge(bars)
+                .transition()
+                .duration(500)
+                .attr("x", (d, i) => xScale(i))
+                .attr("y", d => yScale(d))
+                .attr("height", d => height - yScale(d))
+                .attr("class", (d, i) => {
+                    if (i >= stepData.sorted) {
+                        return "bar green";  // Mark sorted elements as green
+                    } else if (i === stepData.heapRoot) {
+                        return "bar red";  // Mark the heap root as red (current pivot)
+                    } else {
+                        return "bar";
+                    }
+                });
+
+            // Exit phase: Remove bars if needed (not applicable here)
+            bars.exit().remove();
+        }
+
+        // Initial rendering of the bars
+        updateBars(steps[0]);
+
+        // Function to animate the sorting process
+        let stepIndex = 0;
+        const interval = setInterval(() => {
+            stepIndex++;
+            if (stepIndex < steps.length) {
+                updateBars(steps[stepIndex]);
+            } else {
+                clearInterval(interval);
+            }
+        }, 1000);
+
+    </script>
+</body>
+</html>
