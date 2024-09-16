@@ -6,23 +6,23 @@ let duration = 500;
 // Fixed margin for the bars
 const margin = 50;
 
-// Function to render the bars with spacing between divided partitions
+// Function to render the bars with dynamic spacing between divided partitions
 function renderBars(data, low, high, depth, isFinalStep = false) {
-    // Total number of elements and available width for the entire array
     const totalElements = data.length;
-    const availableWidth = width - 2 * margin;  // Leave some margin on the sides
+    const availableWidth = width - 2 * margin;  // Total width available for bars and partitions
 
-    // Dynamic partition space, which grows based on recursion depth
-    const partitionSpace = isFinalStep ? 0 : (depth + 1) * 30;  // No extra space in the final step
+    // Calculate partition space, limited to ensure bars fit in the canvas
+    const maxPartitionSpace = Math.min((availableWidth / totalElements) * 2, (depth + 1) * 50);
+    const partitionSpace = isFinalStep ? 0 : maxPartitionSpace;  // Add space only during sorting
 
-    // Calculate bar width dynamically based on the number of elements and available width
-    const barWidth = availableWidth / totalElements - 5;  // Ensure bars fit with some gap
+    // Dynamically calculate the maximum possible bar width
+    const barWidth = Math.min(availableWidth / totalElements - 5, 30);  // Cap width at 30px
 
-    // X scale: Ensure all bars fit within the available space, with partition space added
+    // X scale for positioning bars and ensuring no overflow
     const x = d3.scaleBand()
         .domain(d3.range(0, totalElements))  // Cover all elements in the array
-        .range([margin, availableWidth + margin])  // Keep bars within the canvas
-        .padding(0.1);  // Padding between bars
+        .range([margin, width - margin])  // Keep bars within the canvas
+        .padding(0.1);  // Padding between bars within the same partition
 
     // Y scale for bar heights
     const y = d3.scaleLinear()
@@ -38,25 +38,31 @@ function renderBars(data, low, high, depth, isFinalStep = false) {
         .append("rect")
         .attr("class", "bar")
         .attr("x", (d, i) => {
-            // Adjust x position based on partition spacing, no space in the final sorted step
-            const adjustedX = i < low || i > high ? x(i) : x(i) + partitionSpace;
-            return adjustedX;
+            // Apply partition space between the divided partitions
+            if (i >= low && i <= high) {
+                return x(i) + partitionSpace / 2;  // Extra space for current partition
+            } else {
+                return x(i);  // Normal spacing for bars outside the current partition
+            }
         })
         .attr("y", d => y(d))
         .attr("height", d => height - y(d))
-        .attr("width", barWidth);  // Adjust width dynamically to prevent overlap
+        .attr("width", barWidth);  // Use dynamic bar width
 
     // Update phase: Animate the transition of bars
     bars.transition()
         .duration(duration)
         .attr("x", (d, i) => {
-            // Adjust x position based on partition spacing, no space in the final sorted step
-            const adjustedX = i < low || i > high ? x(i) : x(i) + partitionSpace;
-            return adjustedX;
+            // Adjust x position during sorting to add partition space dynamically
+            if (i >= low && i <= high) {
+                return x(i) + partitionSpace / 2;  // Extra space for current partition
+            } else {
+                return x(i);  // Normal spacing for bars outside the current partition
+            }
         })
         .attr("y", d => y(d))
         .attr("height", d => height - y(d))
-        .attr("width", barWidth);  // Adjust width dynamically to prevent overlap
+        .attr("width", barWidth);  // Use dynamic bar width
 
     // Exit phase: Remove old bars
     bars.exit().remove();
