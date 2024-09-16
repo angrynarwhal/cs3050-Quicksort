@@ -21,7 +21,12 @@ source .venv/bin/activate
 3. `python app.py`
 4. http://127.0.0.1:8002/ in your browser
 
-## Run Flask App using Dash & Plotly 
+## Run Flask App using Dash & Plotly (Quick Sort)
 1. All steps above, including an activated python venv
 2. `python quickstort-dash.py` 
+3. http://127.0.0.1:8002/ in your browser
+
+## Run Flask App using Dash & Plotly (Heap Sort)
+1. All steps above, including an activated python venv
+2. `python heapsort-dash.py` 
 3. http://127.0.0.1:8002/ in your browser
