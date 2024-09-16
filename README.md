@@ -19,7 +19,9 @@ source .venv/bin/activate
 1. Setup the Jupyter Notebook first
 2. Activate the virtual environment as described above
 3. `python app.py`
+4. http://127.0.0.1:8002/ in your browser
 
 ## Run Flask App using Dash & Plotly 
 1. All steps above, including an activated python venv
 2. `python quickstort-dash.py` 
+3. http://127.0.0.1:8002/ in your browser
