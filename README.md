@@ -30,3 +30,7 @@ source .venv/bin/activate
 1. All steps above, including an activated python venv
 2. `python heapsort-dash.py` 
 3. http://127.0.0.1:8002/ in your browser
+
+## View the Heap Sort D3 Example
+1. Find heap_sort_visualization.html in your file browser
+2. Open the file in your browser (Chrome, Firefox, etc.) 
