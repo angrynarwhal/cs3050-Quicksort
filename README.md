@@ -11,7 +11,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 4. Install libraries needed: `pip install -r requirements.txt` 
+5. `jupyter lab`
 
+## Exit notebook for next section
 
 ## Run Flask App
 1. Setup the Jupyter Notebook first
