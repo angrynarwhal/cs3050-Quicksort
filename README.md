@@ -15,7 +15,11 @@ source .venv/bin/activate
 
 ## Exit notebook for next section
 
-## Run Flask App
+## Run Flask App using D3 Javascript Library 
 1. Setup the Jupyter Notebook first
 2. Activate the virtual environment as described above
 3. `python app.py`
+
+## Run Flask App using Dash & Plotly 
+1. All steps above, including an activated python venv
+2. `python quickstort-dash.py` 
