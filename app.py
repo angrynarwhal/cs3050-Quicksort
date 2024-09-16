@@ -35,7 +35,7 @@ def index():
 @app.route('/quicksort')
 def quicksort_data():
     global steps
-    arr = [random.randint(1, 100) for _ in range(10)]  # Example array
+    arr = [random.randint(1, 100) for _ in range(20)]  # Example array
     steps = []  # Reset steps
     quicksort(arr)  # Perform QuickSort and log steps
     return jsonify(steps)
